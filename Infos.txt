@@ -1,0 +1,15 @@
+# Resumo da Estrutura
+Frontend React: Roda normalmente na porta 3000 (por padrão) e faz requisições HTTP para o backend na porta 3001.
+Backend Node.js/Express: Roda na porta 3001 e gerencia a lógica de negócios e a comunicação com o MongoDB.
+
+1. Configuração do Backend (Node.js/Express)
+server.js: Código que configura o servidor Node.js/Express e define as rotas para interagir com o MongoDB.
+
+2. Configuração do Frontend React
+UserProf Component: Atualiza as URLs para fazer requisições para o backend na porta 3001.
+
+# Execução
+Inicie o Servidor Backend: node server.js
+Inicie o Aplicativo React: npm start
+
+
