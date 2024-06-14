@@ -6,7 +6,7 @@ const UsuarioSchema = new mongoose.Schema({
     email: String,
     password: String,
     usertype: String,
-    cursosInscritos: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Curso' }],
+    cursosInscritos: [String],// [{ type: mongoose.Schema.Types.ObjectId, ref: 'Curso' }],
     meusCursos: { type: Array, default: [] }
 });
 

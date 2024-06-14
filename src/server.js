@@ -5,6 +5,7 @@ const Usuario = require('./models/usuario')
 //const UsuarioSchema = require('./models/usuario')
 const bodyParser = require('body-parser');
 const Curso = require('./models/curso');
+const { ObjectId } = require('mongodb');
 //const CursoSchema = require('./models/curso');
 
 
@@ -14,26 +15,7 @@ app.use(express.json());
 app.use(cors());
 app.use(bodyParser.json());
 
-// async function buscarCursosInscritosPorTitulo(usuarioId, tituloCurso) {
-//   try {
-//     // Encontre o usuário e popule os cursos inscritos
-//     const usuario = await Usuario.findById(usuarioId).populate('cursosInscritos');
 
-//     if (!usuario) {
-//       console.log('Usuário não encontrado.');
-//       return;
-//     }
-
-//     // Filtre os cursos pelo título
-//     const cursosFiltrados = usuario.cursosInscritos.filter(curso => curso.titulo.includes(tituloCurso));
-
-//     console.log('Cursos encontrados:', cursosFiltrados);
-//   } catch (error) {
-//     console.error('Erro ao buscar cursos inscritos:', error);
-//   } finally {
-//     mongoose.connection.close();
-//   }
-// }
 
 // Chame a função com o ID do usuário e o título do curso que você deseja buscar
 const usuarioId = 'ID_DO_USUARIO'; // Substitua pelo ID do usuário
@@ -41,12 +23,10 @@ const tituloCurso = 'HTML'; // Substitua pelo título ou parte do título do cur
 //buscarCursosInscritosPorTitulo(usuarioId, tituloCurso);
 
 
-//const Curso = mongoose.model('Curso',CursoSchema);
-//const Usuario = mongoose.model('Usuario',UsuarioSchema);
+
 
 
 // Rotas usuarios
-// metodo para criar usuario em andamento
 app.post('/usuario', async(req, res) => {
   try {
     const novoUsuario =  await Usuario.create(req.body);
@@ -60,6 +40,7 @@ app.post('/usuario', async(req, res) => {
 })
 
 
+// RETORNA O USUÁRIO A PARTIR DO EMAIL INSERIDO 
 app.get('/usuario', async (req, res) => {
   const email = req.query.email;
 
@@ -80,6 +61,54 @@ app.get('/usuario', async (req, res) => {
     res.status(500).send('Erro ao buscar usuário.');
   }
 });
+
+
+
+//RETORNA TODOS OS USUÁRIOS
+app.get('/usuarios', async (req, res) => { 
+  try {
+    const usuarios = await Usuario.find();
+    res.status(200).json(usuarios);
+  } catch (error) {
+    console.error('Erro na requisição GET /usuarios:', error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+
+
+app.put('/usuarios/:id', async(req, res) => {
+  const {id} = req.params;
+  try {
+    console.log(req.body)
+    //const user = {...req.body, _id: new ObjectId(req.body.id)};
+    const usuario = await Usuario.findByIdAndUpdate(id, req.body);
+    res.status(200).json(usuario);
+
+  }catch (error) {
+    console.log(error.message);
+    res.status(500).json({message: error.message})
+
+  }
+})
+
+app.delete('/usuarios/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const usuario = await Usuario.findByIdAndDelete(id);
+    
+    if (!usuario) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    res.status(200).json({ message: 'Usuário excluído com sucesso' });
+  } catch (error) {
+    console.error('Erro na requisição DELETE /usuarios/:id:', error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
 
 
 
@@ -109,7 +138,7 @@ app.get('/cursos', async (req, res) => {
 });
 
 
-app.delete('/cursos/:title', async (req, res) => {
+app.delete('/cursos/:id', async (req, res) => {
   try {
     const { title } = req.body; 
     const curso = await Curso.findOneAndDelete({ title }); 
@@ -126,7 +155,7 @@ app.delete('/cursos/:title', async (req, res) => {
 });
 
 
-app.put('/cursos/:_id', async (req, res) => {
+app.put('/cursos/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const curso = await Curso.findByIdAndUpdate(id, req.body, { new: true });
@@ -139,6 +168,21 @@ app.put('/cursos/:_id', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+
+app.get('/cursos/:id', async (req, res) => {
+  try {
+    const curso = await Curso.findById(req.params.id).populate('cursoDetails');
+    if (!curso) {
+      return res.status(404).json({ message: 'Curso não encontrado' });
+    }
+    res.status(200).json(curso);
+  } catch (error) {
+    console.error('Erro na requisição GET /cursos/:id:', error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
 
 
 // Rotas Cursosxarope
@@ -172,6 +216,7 @@ app.listen(5241)// Iniciar o servidor
 
 
 mongoose.connect('mongodb+srv://jardianagalvao:MongoDB2024@clusterjardi.ku3mez7.mongodb.net/XaropeBD')
+
 .then(() => {
   console.log("Conectado ao MongoDB Atlas")
 
@@ -180,14 +225,6 @@ mongoose.connect('mongodb+srv://jardianagalvao:MongoDB2024@clusterjardi.ku3mez7.
 )
 
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-// const client = new MongoClient(uri, {
-//   serverApi: {
-//     version: ServerApiVersion.v1,
-//     strict: true,
-//     deprecationErrors: true,
-//   }
-// });
 
 
 
