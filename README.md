@@ -16,14 +16,14 @@ A plataforma Cursos-XaropeGenius visa fornecer uma experiência de aprendizado o
 - **Backend:**
   - Node.js
   - Express
-  - MongoDB (ou outra base de dados utilizada)
+  - MongoDB (Atlas)
 
 ## Estrutura do Projeto
 
 - **XAROPEGENIUS-FRONT:**
   - Contém o código fonte do frontend da plataforma.
 
-- **XAROPEGENIUS-BACKEND:**
+- **REACT-BACKEND:**
   - Contém o código fonte do backend da plataforma.
 
 
